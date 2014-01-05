@@ -15,22 +15,13 @@ public class Calculator {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		MatchScore ms = new MatchScore("瓦伦西亚-马竞：3-1");
-		
-		
-		// the result
-		// the url
-		// Guess List Users
-		// Ranking List
-//		Map<String, Integer> userHisotry = UserHistoryManager.loadAllUserForm(UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT);
-
 		Map<String, String> html = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
 		Map<String, Integer> m = UserHistoryManager.loadAllUserForm(UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT);
-		String result = "瓦伦西亚-马竞：0-0" + "/n" +
-				"塞尔塔-瓦伦西亚： 0-0" + "/n" +
-				"马竞-瓦伦西亚：0-0" + "/n" +
-				"马拉加- 瓦伦西亚： 0-0" + "/n" +
-				"瓦伦西亚- 西班牙人：0-0";
+		String result = "瓦伦西亚-马竞：1-1" + "/n" +
+				"塞尔塔-瓦伦西亚： 2-3" + "/n" +
+				"马竞-瓦伦西亚：2-0" + "/n" +
+				"马拉加- 瓦伦西亚： 1-0" + "/n" +
+				"瓦伦西亚- 西班牙人：1-0";
 		
 		calculatorAndAdd(m, html, result);
 		
@@ -57,11 +48,13 @@ public class Calculator {
 				guessMark = userList.get(guessor);
 			}catch (Exception e) {
 				System.out.println(guessor + " is not registered in Sign-up Page");
+				continue;
 			}
 			
 			String[] guessMatchs = guessStr.split("/n");
 			for( String match: guessMatchs){
 				userList.put(guessor, guessMark + getMatchMarkForOne( match, mss));
+				guessMark = guessMark + getMatchMarkForOne( match, mss);
 			}
 			
 		}

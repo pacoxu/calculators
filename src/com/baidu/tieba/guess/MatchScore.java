@@ -59,6 +59,12 @@ public class MatchScore {
 			}else{
 				//瓦伦1-1马竞
 				int vs = matchStr.indexOf('-');
+				if( vs < 1){
+					vs = matchStr.indexOf(':');
+					if( vs < 1){
+						vs = matchStr.indexOf('：');
+					}
+				}
 				String begin = matchStr.substring(0, vs);
 				String end = matchStr.substring( vs );
 				homeTeam = begin.substring(0, begin.length() - 1 ).trim();
@@ -81,12 +87,12 @@ public class MatchScore {
 		if( homeTeam.equals("瓦伦")){
 			return "瓦伦西亚";
 		}
-		if( homeTeam.equals("瓦伦")){
-			return "瓦伦西亚";
-		}
-		if( homeTeam.equals("瓦伦")){
-			return "瓦伦西亚";
-		}
+//		if( homeTeam.equals("瓦伦")){
+//			return "瓦伦西亚";
+//		}
+//		if( homeTeam.equals("瓦伦")){
+//			return "瓦伦西亚";
+//		}
 		return homeTeam;
 	}
 
@@ -99,12 +105,12 @@ public class MatchScore {
 
 
 	public String getAwayTeam() {
-		if( awayTeam.equals("瓦伦")){
-			return "瓦伦西亚";
-		}
-		if( awayTeam.equals("瓦伦")){
-			return "瓦伦西亚";
-		}
+//		if( awayTeam.equals("瓦伦")){
+//			return "瓦伦西亚";
+//		}
+//		if( awayTeam.equals("瓦伦")){
+//			return "瓦伦西亚";
+//		}
 		if( awayTeam.equals("瓦伦")){
 			return "瓦伦西亚";
 		}
@@ -153,7 +159,7 @@ public class MatchScore {
 	}
 	
 	public int getMark( MatchScore ms ){
-		if(ms.getHomeTeam().equals(homeTeam) && ms.getAwayTeam().equals(awayTeam)){
+		if(ms.getHomeTeam().equals(this.getHomeTeam()) && ms.getAwayTeam().equals(this.getAwayTeam())){
 			if( ms.getHomeScore() == homeScore && ms.getAwayScore() == awayScore ){
 				return 3;
 			}
