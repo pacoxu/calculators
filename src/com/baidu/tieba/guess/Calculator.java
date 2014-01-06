@@ -25,7 +25,7 @@ public class Calculator {
 		
 		calculatorAndAdd(m, html, result);
 		
-		UserHistoryManager.saveUserMarks(m, UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT1);
+		UserHistoryManager.saveUserMarks(m, UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT + "2");
 		System.out.print(html);
 		
 		
