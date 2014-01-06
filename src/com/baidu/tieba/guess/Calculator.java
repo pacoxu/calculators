@@ -15,6 +15,7 @@ public class Calculator {
 	 */
 	public static void main(String[] args) throws Exception {
 		
+		
 		Map<String, String> html = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
 		Map<String, Integer> m = UserHistoryManager.loadAllUserForm(UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT);
 		String result = "瓦伦西亚-马竞：1-1" + "/n" +

@@ -63,7 +63,15 @@ public class HTMLAnalyzer {
 								Node author3 = author2.getChildren().toNodeArray()[1];
 								guessor = author3.getFirstChild().getText();
 							}catch(Exception e){
-								
+								try{
+									Node author= comment.getChildren().toNodeArray()[2];
+									Node author1 = author.getChildren().toNodeArray()[1];
+									Node author2 = author1.getChildren().toNodeArray()[2];
+									Node author3 = author2.getChildren().toNodeArray()[1];
+									guessor = author3.getFirstChild().getText();
+								}catch(Exception e1){
+									
+								}
 							}
 							detectAndAdd(guessList, guessStr, guessor);
 						}
