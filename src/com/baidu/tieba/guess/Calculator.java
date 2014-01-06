@@ -43,6 +43,9 @@ public class Calculator {
 		}
 		
 		for(String guessor: guessList.keySet() ){
+			if( "我爱瓦伦西亚".equals(guessor) ){
+				guessor = "清虚7探戈蝙蝠 ";
+			}
 			String guessStr = guessList.get(guessor);
 			int guessMark = 0;
 			try{
