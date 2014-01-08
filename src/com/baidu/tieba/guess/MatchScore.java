@@ -15,6 +15,33 @@ public class MatchScore {
 		MatchScore ms2 = new MatchScore("马竞:瓦伦西亚: 2-0");
 		
 		System.out.println("");
+    	{
+    		Pattern pat = Pattern.compile("([\u4e00-\u9fa5]{2,6})([0-9]{1,4})-([0-9]{1,4})([\u4e00-\u9fa5]{2,6})");
+        	Matcher matcher =pat.matcher("瓦伦1-1马竞");
+        	System.out.print(matcher.find());
+    	}
+    	{
+    		Pattern pat = Pattern.compile("([\u4e00-\u9fa5]{2,6})[-:：]([\u4e00-\u9fa5]{2,6})[-:：]([0-9]{1,4})[-:：]([0-9]{1,4})");
+        	Matcher matcher =pat.matcher("瓦伦西亚-马竞：0-0");
+        	System.out.print(matcher.find());
+    	}
+    	{
+    		Pattern pat = Pattern.compile("([\u4e00-\u9fa5]{2,6})[-:：]([\u4e00-\u9fa5]{2,6})[-:：]([0-9]{1,4})[-:：]([0-9]{1,4})");
+        	Matcher matcher =pat.matcher("马竞:瓦伦西亚:2-0");
+        	System.out.print(matcher.find());
+        	pat = Pattern.compile("[-:：]");
+        	matcher = pat.matcher("马竞:瓦伦西亚:2-0");
+
+        	System.out.println(matcher.find());
+        	System.out.println(matcher.start());
+        	System.out.println(matcher.find());
+        	System.out.println(matcher.start());
+        	System.out.println(matcher.find());
+        	System.out.println(matcher.start());
+        	System.out.println(matcher.find());
+        	System.out.println(matcher.toMatchResult());
+    	}
+    		
 	}
 
 

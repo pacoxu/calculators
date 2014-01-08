@@ -1,9 +1,21 @@
 package com.baidu.tieba.guess;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 public class Calculator {
 
@@ -16,20 +28,56 @@ public class Calculator {
 	public static void main(String[] args) throws Exception {
 		
 		
+		System.out.println("load web page...");
 		Map<String, String> html = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
-		Map<String, Integer> m = UserHistoryManager.loadAllUserForm(UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT);
-		String result = "瓦伦西亚-马竞：1-1" + "/n" +
-				"塞尔塔-瓦伦西亚： 2-3" + "/n" +
-				"马竞-瓦伦西亚：2-0" + "/n" +
-				"马拉加- 瓦伦西亚： 1-0" + "/n" +
-				"瓦伦西亚- 西班牙人：1-0";
+		Map<String, String> html1 = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
+		html.putAll(html1);
 		
+		System.out.println("load user list...");
+		Map<String, Integer> m = UserHistoryManager.loadAllUserForm(UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT);
+		String result = "瓦伦西亚-马竞：1-1";
+//		 + "/n" +
+//			"塞尔塔-瓦伦西亚： 2-3" + "/n" +
+//			"马竞-瓦伦西亚：2-0" + "/n" +
+//			"马拉加- 瓦伦西亚： 1-0" + "/n" +
+//			"瓦伦西亚- 西班牙人：1-0"
+
+		System.out.println("The result is "+ result);
+		System.out.println("calculate ...");
 		calculatorAndAdd(m, html, result);
+
+		
+		System.out.println("save user list...");
 		
 		UserHistoryManager.saveUserMarks(m, UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT + "2");
-		System.out.print(html);
 		
+        ByValueComparator bvc = new ByValueComparator(m);
+		System.out.print(" sort ");
+		List<String> keys = new ArrayList<String>(m.keySet());
 		
+		Collections.sort(keys, bvc);
+
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet = wb.createSheet("Sheet 1");
+		int i = 0;
+		for(String key : keys) {
+			System.out.printf("%s -> %d\n", key, m.get(key));
+//			finalResult.put( key , String.valueOf( m.get(key) ) );
+			Row output = sheet.createRow(i++);
+				
+			Cell keyCell = output.createCell(0);
+			keyCell.setCellValue(key);
+			Cell markCell = output.createCell(1);
+			markCell.setCellValue(m.get(key));
+		}
+
+		File excelTemp  = File.createTempFile( UUID.randomUUID().toString() ,"workbook.xls");
+		FileOutputStream fileOut = new FileOutputStream( excelTemp);
+		wb.write(fileOut);
+		fileOut.close();
+	     
+		System.out.println( excelTemp.getAbsolutePath() );
+
 	}
 
 	
@@ -42,10 +90,17 @@ public class Calculator {
 			mss.add( new MatchScore(match) );
 		}
 		
+		for(String allguess: userList.keySet()){
+			userList.put(allguess, ((Integer)userList.get(allguess)).intValue()-1);
+		}
+		
 		for(String guessor: guessList.keySet() ){
+			
 			if( "我爱瓦伦西亚".equals(guessor) ){
 				guessor = "清虚7探戈蝙蝠 ";
 			}
+
+			
 			String guessStr = guessList.get(guessor);
 			int guessMark = 0;
 			try{
@@ -54,6 +109,8 @@ public class Calculator {
 				System.out.println(guessor + " is not registered in Sign-up Page");
 				continue;
 			}
+			guessMark++;
+			
 			
 			String[] guessMatchs = guessStr.split("/n");
 			for( String match: guessMatchs){
@@ -80,4 +137,25 @@ public class Calculator {
 		return m;
 	}
 
+	static class ByValueComparator implements Comparator<String> {
+		Map<String, Integer> base_map;
+		 
+        public ByValueComparator(Map<String, Integer> base_map) {
+            this.base_map = base_map;
+        }
+ 
+        public int compare(String arg0, String arg1) {
+            if (!base_map.containsKey(arg0) || !base_map.containsKey(arg1)) {
+                return 0;
+            }
+ 
+            if (base_map.get(arg0) < base_map.get(arg1)) {
+                return 1;
+            } else if (base_map.get(arg0) == base_map.get(arg1)) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+	}
 }

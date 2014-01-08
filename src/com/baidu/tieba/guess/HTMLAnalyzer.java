@@ -19,7 +19,7 @@ public class HTMLAnalyzer {
 			guessList.put(guessor, guessStr);			
 		}
 	}
-	
+
 	public static Map<String, String> urlAnalyzer(String url) throws Exception{
 		Map<String, String> guessList = new HashMap<String, String>();
 //		String html = getHTML(url, "gbk");
