@@ -1,8 +1,10 @@
 package com.baidu.tieba.guess;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,16 +62,26 @@ public class Calculator {
 		Workbook wb = new HSSFWorkbook();
 		Sheet sheet = wb.createSheet("Sheet 1");
 		int i = 0;
+		File excelTemp1  = new File( "markHistory/score1.csv");
+		FileOutputStream fileOut1 = new FileOutputStream( excelTemp1);
+		
+		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOut1, "UTF-8");
+		BufferedWriter bw = new BufferedWriter(new BufferedWriter(outputStreamWriter));		
+
+		
+		
 		for(String key : keys) {
 			System.out.printf("%s -> %d\n", key, m.get(key));
 //			finalResult.put( key , String.valueOf( m.get(key) ) );
 			Row output = sheet.createRow(i++);
 				
+			bw.append(key+","+ m.get(key)+"\n");
 			Cell keyCell = output.createCell(0);
 			keyCell.setCellValue(key);
 			Cell markCell = output.createCell(1);
 			markCell.setCellValue(m.get(key));
 		}
+		bw.close();
 
 		File excelTemp  = new File( "markHistory/score1.xls");
 		FileOutputStream fileOut = new FileOutputStream( excelTemp);
