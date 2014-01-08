@@ -30,7 +30,7 @@ public class Calculator {
 		
 		System.out.println("load web page...");
 		Map<String, String> html = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
-		Map<String, String> html1 = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
+		Map<String, String> html1 = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175?pn=2");
 		html.putAll(html1);
 		
 		System.out.println("load user list...");
@@ -71,11 +71,11 @@ public class Calculator {
 			markCell.setCellValue(m.get(key));
 		}
 
-		File excelTemp  = File.createTempFile( UUID.randomUUID().toString() ,"workbook.xls");
+		File excelTemp  = new File( "markHistory/score1.xls");
 		FileOutputStream fileOut = new FileOutputStream( excelTemp);
 		wb.write(fileOut);
 		fileOut.close();
-	     
+	    
 		System.out.println( excelTemp.getAbsolutePath() );
 
 	}
