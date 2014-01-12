@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -19,7 +21,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.baidu.tieba.guess.html.HTMLParser;
+import com.baidu.tieba.guess.unsuednow.HTMLAnalyzer;
+
 public class Calculator {
+
+	private static final int GUESSLINE_AT_LEAST = 3;
 
 	/**
 	 * @param args
@@ -31,17 +38,17 @@ public class Calculator {
 		
 		
 		System.out.println("load web page...");
-		Map<String, String> html = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175");
-		Map<String, String> html1 = HTMLAnalyzer.urlAnalyzer("http://tieba.baidu.com/p/2798082175?pn=2");
+		Map<String, String> html = HTMLParser.parser("http://tieba.baidu.com/p/2798082175");
+		Map<String, String> html1 = HTMLParser.parser("http://tieba.baidu.com/p/2798082175?pn=2");
 		html.putAll(html1);
 		
 		System.out.println("load user list...");
 		Map<String, Integer> m = UserHistoryManager.loadAllUserForm(UserHistoryManager.MARK_HISTORY_USER_HISTORY_TXT);
-		String result = "瓦伦西亚-马竞：1-1";
-//		 + "/n" +
-//			"塞尔塔-瓦伦西亚： 2-3" + "/n" +
-//			"马竞-瓦伦西亚：2-0" + "/n" +
-//			"马拉加- 瓦伦西亚： 1-0" + "/n" +
+		String result = "瓦伦西亚-马竞：1-1"
+		 + "\n" +
+			"塞尔塔-瓦伦西亚： 2-1" + "\n" ;
+//			"马竞-瓦伦西亚：2-0" + "\n" +
+//			"马拉加- 瓦伦西亚： 1-0" + "\n" +
 //			"瓦伦西亚- 西班牙人：1-0"
 
 		System.out.println("The result is "+ result);
@@ -96,14 +103,14 @@ public class Calculator {
 	private static void calculatorAndAdd(Map<String, Integer> userList,
 			Map<String, String> guessList, String result) throws IOException {
 		
-		String[] matchs = result.split("/n");
+		String[] matchs = result.split("\n");
 		List<MatchScore> mss = new ArrayList<MatchScore>();
 		for( String match: matchs){
 			mss.add( new MatchScore(match) );
 		}
 		
 		for(String allguess: userList.keySet()){
-			userList.put(allguess, ((Integer)userList.get(allguess)).intValue()-1);
+			userList.put(allguess, ((Integer)userList.get(allguess)).intValue()-mss.size());
 		}
 		
 		for(String guessor: guessList.keySet() ){
@@ -121,14 +128,42 @@ public class Calculator {
 				System.out.println(guessor + " is not registered in Sign-up Page");
 				continue;
 			}
-			guessMark++;
+			guessMark = guessMark + mss.size();
 			
 			
-			String[] guessMatchs = guessStr.split("/n");
-			for( String match: guessMatchs){
-				userList.put(guessor, guessMark + getMatchMarkForOne( match, mss));
-				guessMark = guessMark + getMatchMarkForOne( match, mss);
+			String[] guessMatchs = guessStr.split("\n");
+			if( guessMatchs.length < GUESSLINE_AT_LEAST ){
+				//without \n 如果格式不是常规就不管了
+//				sanguobaqi
+//				瓦伦西亚-马竞：0-3 塞尔塔-瓦伦西亚： 0-1 马竞-瓦伦西亚：1-1 马拉加- 瓦伦西亚： 0-1 瓦伦西亚- 西班牙人：2-2
+				Pattern pat = Pattern.compile("([\u4e00-\u9fa5]{2,6})[-:：]([\u4e00-\u9fa5]{2,6})[-:：]([0-9]{1,4})[-:：]([0-9]{1,4})");
+				Matcher m = pat.matcher(guessStr);
+				boolean find = true;
+				while( m.find() ){
+					String match = guessStr.substring( m.start() , m.end());
+					guessMark = guessMark + getMatchMarkForOne( match, mss);
+					userList.put(guessor, guessMark);
+					find = false;
+				}
+				if(find){
+//					赤之泪200
+//					瓦伦西亚 - 马竞 0-2 / 塞尔塔 - 瓦伦西亚 1-0 / 马竞 - 瓦伦西亚 2-1 / 马拉加 - 瓦伦西亚 2-1 / 瓦伦西亚 - 西班牙人 0-1
+					if(guessStr.contains("/")){
+						guessMatchs = guessStr.split("/");
+						for( String match: guessMatchs){
+							guessMark = guessMark + getMatchMarkForOne( match, mss);
+							userList.put(guessor, guessMark);
+						}	
+					}
+				}				
+			}else{
+				
+				for( String match: guessMatchs){
+					guessMark = guessMark + getMatchMarkForOne( match, mss);
+					userList.put(guessor, guessMark);
+				}				
 			}
+			
 			
 		}
 		
